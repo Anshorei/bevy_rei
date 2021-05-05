@@ -1,0 +1,29 @@
+[package]
+name = "bevy_progress_bar"
+version = "0.5.0"
+authors = ["Ansho Rei <anshorei@protonmail.com>"]
+edition = "2018"
+license-file = "LICENSE"
+description = "Easy ninepatch progress bar in bevy"
+keywords = ["loading", "2d", "gamedev", "bevy"]
+categories = ["game-engines"]
+homepage = "http://github.com/Anshorei/bevy_rei"
+documentation = "http://github.com/Anshorei/bevy_rei"
+repository = "http://github.com/Anshorei/bevy_rei"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+exclude = [
+  "examples/*",
+  "assets/*",
+]
+
+[dependencies]
+bevy = "0.5"
+bevy_ninepatch = "0.5"
+spirv_headers = ">= 1.5.0, < 1.5.1"
+
+[[example]]
+name = "progress_bar"
+path = "examples/progress_bar.rs"
