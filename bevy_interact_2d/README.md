@@ -12,13 +12,13 @@ Can help you with:
 ## Using Interact2D
 
 Add the interaction plugin, or use the `InteractionDebugPlugin` instead when debugging.
-```
+```rust
 App::build()
   .add_plugin(InteractionPlugin)
 ```
 
 Spawn a camera with an interaction source with a number of interaction groups.
-```
+```rust
 commands
   .spawn_bundle(OrthographicCameraBundle::new_2d())
   .insert(InteractionSource {
@@ -28,7 +28,7 @@ commands
 ```
 
 Spawn an interactable entity
-```
+```rust
 commands
   .spawn()
   .insert(Interactable {
@@ -39,9 +39,8 @@ commands
 ```
 
 Now you can create a system that uses the interaction state
-```
+```rust
 fn interaction_system(
-  mut commands: Commands,
   mouse_button_input: Res<Input<MouseButton>>,
   interaction_state: Res<InteractionState>,
 ) {
