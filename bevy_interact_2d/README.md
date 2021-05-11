@@ -9,6 +9,8 @@ Can help you with:
 - Clicking
 - Dragging & Droppings
 
+![Progress bar example](examples/trash_cleanup.gif)
+
 ## Using Interact2D
 
 Add the interaction plugin, or use the `InteractionDebugPlugin` instead when debugging.

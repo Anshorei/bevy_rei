@@ -55,14 +55,12 @@ fn setup(
 
   let mut entities = vec![trashcan];
 
-  for _ in 0..3 {
-    let angle = random::<f32>()*f32::consts::PI;
-
+  for i in 0..3 {
     let trash = commands
       .spawn_bundle(SpriteSheetBundle {
         texture_atlas: trash_atlas.clone(),
         transform: Transform::from_xyz(random::<f32>()*100.-50., random::<f32>()*100.-50.,0.),
-        sprite: TextureAtlasSprite::new(random::<u32>()%3),
+        sprite: TextureAtlasSprite::new(i),
         ..Default::default()
       })
       .insert(Interactable {
