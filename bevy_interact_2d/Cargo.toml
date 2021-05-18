@@ -19,9 +19,12 @@ exclude = [
   "assets/*",
 ]
 
+[features]
+debug = ["bevy_prototype_lyon"]
+
 [dependencies]
 bevy = "0.5"
-bevy_prototype_lyon = "0.3"
+bevy_prototype_lyon = { version = "0.3", optional = true }
 
 [dev-dependencies]
 rand = "0.8"

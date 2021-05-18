@@ -23,12 +23,16 @@ impl Plugin for InteractionPlugin {
 
 /// The interaction debug plugin is a drop-in replacement for the interaction
 /// plugin that will draw the bounding boxes for Interactable components.
+/// This debug plugin requires the bevy_prototype_lyon ShapePlugin
+/// in order to function.
+#[cfg(feature = "debug")]
 pub struct InteractionDebugPlugin;
+
+#[cfg(feature = "debug")]
 impl Plugin for InteractionDebugPlugin {
   fn build(&self, app: &mut AppBuilder) {
     app
       .add_plugin(InteractionPlugin)
-      .add_plugin(bevy_prototype_lyon::prelude::ShapePlugin)
       // TODO: what is the correct stage for this?
       // POST_UPDATE doesn't work because then lyon won't draw the bounding mesh
       // check whether that is done in UPDATE or POST_UPDATE
@@ -172,10 +176,12 @@ fn interaction_system(
   }
 }
 
+#[cfg(feature = "debug")]
 pub struct DebugInteractable {
   pub child: Entity,
 }
 
+#[cfg(feature = "debug")]
 fn setup_interaction_debug(
   mut commands: Commands,
   interactables: Query<(Entity, &Interactable), Added<Interactable>>,
@@ -220,6 +226,7 @@ fn setup_interaction_debug(
   }
 }
 
+#[cfg(feature = "debug")]
 pub fn cleanup_interaction_debug(
   mut commands: Commands,
   removed_interactables: RemovedComponents<Interactable>,
