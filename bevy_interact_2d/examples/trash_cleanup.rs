@@ -1,5 +1,8 @@
 use bevy::prelude::*;
-use bevy_interact_2d::{Group, Interactable, InteractionPlugin, InteractionSource, InteractionState, drag::{DragPlugin, Draggable, Dragged}};
+use bevy_interact_2d::{
+  drag::{DragPlugin, Draggable, Dragged},
+  Group, Interactable, InteractionPlugin, InteractionSource, InteractionState,
+};
 use rand::prelude::*;
 
 const TRASH_GROUP: u8 = 0;
@@ -34,10 +37,20 @@ fn setup(
     });
 
   let trashcan_texture = asset_server.load("trashcan.png");
-  let trashcan_atlas = texture_atlases.add(TextureAtlas::from_grid(trashcan_texture, Vec2::new(24., 24.), 2, 1));
+  let trashcan_atlas = texture_atlases.add(TextureAtlas::from_grid(
+    trashcan_texture,
+    Vec2::new(24., 24.),
+    2,
+    1,
+  ));
 
   let trash_texture = asset_server.load("trash.png");
-  let trash_atlas = texture_atlases.add(TextureAtlas::from_grid(trash_texture, Vec2::new(24., 24.), 3, 1));
+  let trash_atlas = texture_atlases.add(TextureAtlas::from_grid(
+    trash_texture,
+    Vec2::new(24., 24.),
+    3,
+    1,
+  ));
 
   let trashcan = commands
     .spawn_bundle(SpriteSheetBundle {
@@ -50,7 +63,7 @@ fn setup(
       bounding_box: (Vec2::new(-12., -12.), Vec2::new(12., 12.)),
       ..Default::default()
     })
-    .insert(TrashCan{})
+    .insert(TrashCan {})
     .id();
 
   let mut entities = vec![trashcan];
@@ -59,7 +72,11 @@ fn setup(
     let trash = commands
       .spawn_bundle(SpriteSheetBundle {
         texture_atlas: trash_atlas.clone(),
-        transform: Transform::from_xyz(random::<f32>()*100.-50., random::<f32>()*100.-50.,0.),
+        transform: Transform::from_xyz(
+          random::<f32>() * 100. - 50.,
+          random::<f32>() * 100. - 50.,
+          0.,
+        ),
         sprite: TextureAtlasSprite::new(i),
         ..Default::default()
       })
@@ -73,7 +90,7 @@ fn setup(
         hook: None,
         ..Default::default()
       })
-      .insert(Trash{})
+      .insert(Trash {})
       .id();
     entities.push(trash);
   }
@@ -98,7 +115,12 @@ fn interact_with_trashcan(
   mut query: Query<(Entity, &mut TextureAtlasSprite), With<TrashCan>>,
 ) {
   for (entity, mut sprite) in query.iter_mut() {
-    if interaction_state.get_group(Group(TRASHCAN_GROUP)).iter().find(|(e, _)| *e == entity).is_some() {
+    if interaction_state
+      .get_group(Group(TRASHCAN_GROUP))
+      .iter()
+      .find(|(e, _)| *e == entity)
+      .is_some()
+    {
       if sprite.index == 0 {
         info!("Opening trashcan.");
       }
