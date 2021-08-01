@@ -2,4 +2,5 @@
 members = [
     "bevy_interact_2d",
     "bevy_progress_bar",
+    "bevy_navmesh",
 ]
