@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+
+use bevy::prelude::*;
+
 use bevy::{
   app::{Events, ManualEventReader},
-  prelude::*,
   render::camera::Camera,
   window::WindowId,
 };
-use std::collections::HashMap;
 
 pub mod drag;
 

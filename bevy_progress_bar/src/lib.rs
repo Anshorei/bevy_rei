@@ -1,6 +1,8 @@
-use bevy::prelude::*;
-use bevy_ninepatch::{NinePatchBuilder, NinePatchBundle, NinePatchData};
 use std::sync::{Arc, Mutex};
+
+use bevy::prelude::*;
+
+use bevy_ninepatch::{NinePatchBuilder, NinePatchBundle, NinePatchData};
 
 pub struct ProgressBarPlugin;
 
