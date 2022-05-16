@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use bevy::{
-  app::{Events, ManualEventReader},
+  ecs::event::{Events, ManualEventReader},
   render::camera::Camera,
   window::WindowId,
 };

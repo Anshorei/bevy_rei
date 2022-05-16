@@ -107,8 +107,7 @@ fn setup(
       },
       GlobalTransform::default(),
     ))
-    .push_children(&entities)
-    .id();
+    .push_children(&entities);
 }
 
 // This system opens and closes the trashcan when the mouse
