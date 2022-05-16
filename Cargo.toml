@@ -3,3 +3,12 @@ members = [
     "bevy_interact_2d",
     "bevy_progress_bar",
 ]
+
+# See:
+#
+#     https://github.com/gfx-rs/wgpu/issues/2217
+#     https://github.com/bevyengine/bevy/issues/3205
+#
+# NOTE: wgpu/Bevy needs this for workspaces -- `edition = "2021"` works for
+# normal crates
+resolver = "2"
