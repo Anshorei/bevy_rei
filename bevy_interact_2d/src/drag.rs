@@ -3,9 +3,9 @@ use bevy::prelude::*;
 use super::{Group, Interactable, InteractionState};
 
 pub struct Dragged {
-  pub group:        Group,
-  pub translation:  Vec2,
-  pub origin:       Vec2,
+  pub group: Group,
+  pub translation: Vec2,
+  pub origin: Vec2,
   pub just_dropped: bool,
   pub just_dragged: bool,
 }
@@ -61,16 +61,16 @@ pub struct Draggable {
   // Where the entity is hooked onto the cursor while dragging.
   // If no hook is given, the entity will be pinned to the cursor
   // as it was when the drag was started.
-  pub hook:          Option<Vec2>,
-  pub groups:        Vec<Group>,
+  pub hook: Option<Vec2>,
+  pub groups: Vec<Group>,
   pub drop_strategy: DropStrategy,
 }
 
 impl Default for Draggable {
   fn default() -> Self {
     Self {
-      hook:          None,
-      groups:        vec![Group::default()],
+      hook: None,
+      groups: vec![Group::default()],
       drop_strategy: DropStrategy::Leave,
     }
   }
