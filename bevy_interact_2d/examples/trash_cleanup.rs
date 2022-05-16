@@ -9,17 +9,20 @@ const TRASH_GROUP: u8 = 0;
 const TRASHCAN_GROUP: u8 = 1;
 
 fn main() {
-  App::build()
+  App::new()
     .add_plugins(DefaultPlugins)
     .add_plugin(InteractionPlugin)
     .add_plugin(DragPlugin)
-    .add_startup_system(setup.system())
-    .add_system(interact_with_trashcan.system())
-    .add_system(drag_trash.system())
+    .add_startup_system(setup)
+    .add_system(interact_with_trashcan)
+    .add_system(drag_trash)
     .run();
 }
 
+#[derive(Component)]
 struct TrashCan {}
+
+#[derive(Component)]
 struct Trash {}
 
 fn setup(
