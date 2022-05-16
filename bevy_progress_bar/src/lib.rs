@@ -7,35 +7,36 @@ use bevy_ninepatch::{NinePatchBuilder, NinePatchBundle, NinePatchData};
 pub struct ProgressBarPlugin;
 
 impl Plugin for ProgressBarPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
-      .add_system(create_progress_bars.system())
-      .add_system(update_progress_bars.system());
+      .add_system(create_progress_bars)
+      .add_system(update_progress_bars);
   }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Component)]
 pub struct ProgressBarData {
-  pub nine_patch:         Handle<NinePatchBuilder<()>>,
-  pub foreground_texture: Handle<Texture>,
-  pub background_texture: Handle<Texture>,
-  pub percent:            f32,
+  pub nine_patch: Handle<NinePatchBuilder<()>>,
+  pub foreground_texture: Handle<Image>,
+  pub background_texture: Handle<Image>,
+  pub percent: f32,
   // No need to touch
-  pub percent_mutex:      Arc<Mutex<f32>>,
+  pub percent_mutex: Arc<Mutex<f32>>,
 }
 
 impl Default for ProgressBarData {
   fn default() -> Self {
     Self {
-      nine_patch:         Default::default(),
+      nine_patch: Default::default(),
       foreground_texture: Default::default(),
       background_texture: Default::default(),
-      percent:            0.,
-      percent_mutex:      Arc::new(Mutex::new(0.)),
+      percent: 0.,
+      percent_mutex: Arc::new(Mutex::new(0.)),
     }
   }
 }
 
+#[derive(Component)]
 struct ProgressBarForeground {
   pub percent_mutex: Arc<Mutex<f32>>,
 }
@@ -43,15 +44,15 @@ struct ProgressBarForeground {
 #[derive(Bundle, Default)]
 pub struct ProgressBarBundle {
   pub progress_bar_data: ProgressBarData,
-  pub style:             Style,
-  pub node:              Node,
-  pub transform:         Transform,
-  pub global_transform:  GlobalTransform,
+  pub style: Style,
+  pub node: Node,
+  pub transform: Transform,
+  pub global_transform: GlobalTransform,
 }
 
 fn create_ninepatch_bundle(
   nine_patch_handle: Handle<NinePatchBuilder<()>>,
-  texture_handle: Handle<Texture>,
+  texture_handle: Handle<Image>,
   percent: Option<f32>,
 ) -> NinePatchBundle<()> {
   NinePatchBundle {

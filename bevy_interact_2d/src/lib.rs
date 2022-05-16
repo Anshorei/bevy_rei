@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use bevy::{
-  app::{Events, ManualEventReader},
+  ecs::event::{Events, ManualEventReader},
   render::camera::Camera,
   window::WindowId,
 };
@@ -15,11 +15,11 @@ pub mod drag;
 pub struct InteractionPlugin;
 
 impl Plugin for InteractionPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
       .init_resource::<InteractionState>()
-      .add_system_to_stage(CoreStage::PostUpdate, interaction_state_system.system())
-      .add_system_to_stage(CoreStage::PostUpdate, interaction_system.system());
+      .add_system_to_stage(CoreStage::PostUpdate, interaction_state_system)
+      .add_system_to_stage(CoreStage::PostUpdate, interaction_system);
   }
 }
 
@@ -32,14 +32,14 @@ pub struct InteractionDebugPlugin;
 
 #[cfg(feature = "debug")]
 impl Plugin for InteractionDebugPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
       .add_plugin(InteractionPlugin)
       // TODO: what is the correct stage for this?
       // POST_UPDATE doesn't work because then lyon won't draw the bounding mesh
       // check whether that is done in UPDATE or POST_UPDATE
-      .add_system_to_stage(CoreStage::PreUpdate, setup_interaction_debug.system())
-      .add_system_to_stage(CoreStage::PostUpdate, cleanup_interaction_debug.system());
+      .add_system_to_stage(CoreStage::PreUpdate, setup_interaction_debug)
+      .add_system_to_stage(CoreStage::PostUpdate, cleanup_interaction_debug);
   }
 }
 
@@ -52,9 +52,9 @@ pub struct Group(pub u8);
 #[derive(Default)]
 pub struct InteractionState {
   pub ordered_interact_list_map: HashMap<Group, Vec<(Entity, Vec2)>>,
-  pub cursor_positions:          HashMap<Group, Vec2>,
-  pub last_window_id:            WindowId,
-  pub last_cursor_position:      Vec2,
+  pub cursor_positions: HashMap<Group, Vec2>,
+  pub last_window_id: WindowId,
+  pub last_cursor_position: Vec2,
 }
 
 impl InteractionState {
@@ -67,15 +67,16 @@ impl InteractionState {
 }
 
 /// Attach an interaction source to cameras you want to interact from
+#[derive(Component)]
 pub struct InteractionSource {
-  pub groups:        Vec<Group>,
+  pub groups: Vec<Group>,
   pub cursor_events: ManualEventReader<CursorMoved>,
 }
 
 impl Default for InteractionSource {
   fn default() -> Self {
     Self {
-      groups:        vec![Group::default()],
+      groups: vec![Group::default()],
       cursor_events: ManualEventReader::default(),
     }
   }
@@ -128,9 +129,10 @@ fn interaction_state_system(
 }
 
 /// This component makes an entity interactable with the mouse cursor
+#[derive(Component)]
 pub struct Interactable {
   /// The interaction groups this interactable entity belongs to
-  pub groups:       Vec<Group>,
+  pub groups: Vec<Group>,
   /// The interaction area for the interactable entity
   pub bounding_box: (Vec2, Vec2),
 }
@@ -138,7 +140,7 @@ pub struct Interactable {
 impl Default for Interactable {
   fn default() -> Self {
     Self {
-      groups:       vec![Group::default()],
+      groups: vec![Group::default()],
       bounding_box: (Vec2::default(), Vec2::default()),
     }
   }
@@ -179,6 +181,7 @@ fn interaction_system(
 }
 
 #[cfg(feature = "debug")]
+#[derive(Component)]
 pub struct DebugInteractable {
   pub child: Entity,
 }
@@ -215,8 +218,10 @@ fn setup_interaction_debug(
     let child = commands
       .spawn_bundle(GeometryBuilder::build_as(
         &bounding_mesh,
-        ShapeColors::new(Color::rgb_u8(red, green, blue)),
-        DrawMode::Stroke(StrokeOptions::default()),
+        DrawMode::Outlined {
+          fill_mode: FillMode::color(Color::rgb_u8(red, green, blue)),
+          outline_mode: StrokeMode::new(Color::BLACK, 10.0),
+        },
         Transform::default(),
       ))
       .id();

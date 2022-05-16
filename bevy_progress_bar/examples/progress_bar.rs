@@ -3,12 +3,12 @@ use bevy_ninepatch::{NinePatchBuilder, NinePatchPlugin};
 use bevy_progress_bar::{ProgressBarBundle, ProgressBarData, ProgressBarPlugin};
 
 fn main() {
-  App::build()
+  App::new()
     .add_plugins(DefaultPlugins)
     .add_plugin(NinePatchPlugin::<()>::default())
     .add_plugin(ProgressBarPlugin)
-    .add_startup_system(setup_loading.system())
-    .add_system(update_loading.system())
+    .add_startup_system(setup_loading)
+    .add_system(update_loading)
     .run();
 }
 
