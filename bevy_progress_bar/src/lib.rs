@@ -16,22 +16,22 @@ impl Plugin for ProgressBarPlugin {
 
 #[derive(Debug, Clone)]
 pub struct ProgressBarData {
-  pub nine_patch:         Handle<NinePatchBuilder<()>>,
+  pub nine_patch: Handle<NinePatchBuilder<()>>,
   pub foreground_texture: Handle<Texture>,
   pub background_texture: Handle<Texture>,
-  pub percent:            f32,
+  pub percent: f32,
   // No need to touch
-  pub percent_mutex:      Arc<Mutex<f32>>,
+  pub percent_mutex: Arc<Mutex<f32>>,
 }
 
 impl Default for ProgressBarData {
   fn default() -> Self {
     Self {
-      nine_patch:         Default::default(),
+      nine_patch: Default::default(),
       foreground_texture: Default::default(),
       background_texture: Default::default(),
-      percent:            0.,
-      percent_mutex:      Arc::new(Mutex::new(0.)),
+      percent: 0.,
+      percent_mutex: Arc::new(Mutex::new(0.)),
     }
   }
 }
@@ -43,10 +43,10 @@ struct ProgressBarForeground {
 #[derive(Bundle, Default)]
 pub struct ProgressBarBundle {
   pub progress_bar_data: ProgressBarData,
-  pub style:             Style,
-  pub node:              Node,
-  pub transform:         Transform,
-  pub global_transform:  GlobalTransform,
+  pub style: Style,
+  pub node: Node,
+  pub transform: Transform,
+  pub global_transform: GlobalTransform,
 }
 
 fn create_ninepatch_bundle(
