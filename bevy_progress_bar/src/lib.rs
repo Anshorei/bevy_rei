@@ -7,18 +7,18 @@ use bevy_ninepatch::{NinePatchBuilder, NinePatchBundle, NinePatchData};
 pub struct ProgressBarPlugin;
 
 impl Plugin for ProgressBarPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
-      .add_system(create_progress_bars.system())
-      .add_system(update_progress_bars.system());
+      .add_system(create_progress_bars)
+      .add_system(update_progress_bars);
   }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Component)]
 pub struct ProgressBarData {
   pub nine_patch: Handle<NinePatchBuilder<()>>,
-  pub foreground_texture: Handle<Texture>,
-  pub background_texture: Handle<Texture>,
+  pub foreground_texture: Handle<Image>,
+  pub background_texture: Handle<Image>,
   pub percent: f32,
   // No need to touch
   pub percent_mutex: Arc<Mutex<f32>>,
@@ -36,6 +36,7 @@ impl Default for ProgressBarData {
   }
 }
 
+#[derive(Component)]
 struct ProgressBarForeground {
   pub percent_mutex: Arc<Mutex<f32>>,
 }
@@ -51,7 +52,7 @@ pub struct ProgressBarBundle {
 
 fn create_ninepatch_bundle(
   nine_patch_handle: Handle<NinePatchBuilder<()>>,
-  texture_handle: Handle<Texture>,
+  texture_handle: Handle<Image>,
   percent: Option<f32>,
 ) -> NinePatchBundle<()> {
   NinePatchBundle {
