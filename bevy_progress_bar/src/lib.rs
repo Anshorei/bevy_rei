@@ -9,32 +9,31 @@ pub struct ProgressBarPlugin;
 impl Plugin for ProgressBarPlugin {
   fn build(&self, app: &mut App) {
     app
-      .add_system(create_progress_bars.system())
-      .add_system(update_progress_bars.system())
-    ;
+      .add_system(create_progress_bars)
+      .add_system(update_progress_bars);
   }
 }
 
 #[derive(Debug, Clone, Component)]
 pub struct ProgressBarData {
-  pub foreground_nine_patch:         Handle<NinePatchBuilder<()>>,
-  pub background_nine_patch:         Handle<NinePatchBuilder<()>>,
-  pub foreground_texture: Handle<Image>,
-  pub background_texture: Handle<Image>,
-  pub percent:            f32,
+  pub foreground_nine_patch: Handle<NinePatchBuilder<()>>,
+  pub background_nine_patch: Handle<NinePatchBuilder<()>>,
+  pub foreground_texture:    Handle<Image>,
+  pub background_texture:    Handle<Image>,
+  pub percent:               f32,
   // No need to touch
-  pub percent_mutex:      Arc<Mutex<f32>>,
+  pub percent_mutex:         Arc<Mutex<f32>>,
 }
 
 impl Default for ProgressBarData {
   fn default() -> Self {
     Self {
-      foreground_nine_patch:         Default::default(),
-      background_nine_patch:         Default::default(),
-      foreground_texture: Default::default(),
-      background_texture: Default::default(),
-      percent:            0.,
-      percent_mutex:      Arc::new(Mutex::new(0.)),
+      foreground_nine_patch: Default::default(),
+      background_nine_patch: Default::default(),
+      foreground_texture:    Default::default(),
+      background_texture:    Default::default(),
+      percent:               0.,
+      percent_mutex:         Arc::new(Mutex::new(0.)),
     }
   }
 }

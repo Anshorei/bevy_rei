@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use bevy::{
-  app::{Events, ManualEventReader},
+  ecs::event::{Events, ManualEventReader},
   render::camera::Camera,
   window::WindowId,
 };
@@ -20,8 +20,8 @@ impl Plugin for InteractionPlugin {
   fn build(&self, app: &mut App) {
     app
       .init_resource::<InteractionState>()
-      .add_system_to_stage(CoreStage::PostUpdate, interaction_state_system.system())
-      .add_system_to_stage(CoreStage::PostUpdate, interaction_system.system());
+      .add_system_to_stage(CoreStage::PostUpdate, interaction_state_system)
+      .add_system_to_stage(CoreStage::PostUpdate, interaction_system);
   }
 }
 
@@ -41,8 +41,8 @@ impl Plugin for InteractionDebugPlugin {
       // TODO: what is the correct stage for this?
       // POST_UPDATE doesn't work because then lyon won't draw the bounding mesh
       // check whether that is done in UPDATE or POST_UPDATE
-      .add_system_to_stage(CoreStage::PreUpdate, setup_interaction_debug.system())
-      .add_system_to_stage(CoreStage::PostUpdate, cleanup_interaction_debug.system());
+      .add_system_to_stage(CoreStage::PreUpdate, setup_interaction_debug)
+      .add_system_to_stage(CoreStage::PostUpdate, cleanup_interaction_debug);
   }
 }
 

@@ -17,9 +17,9 @@ fn main() {
     .add_plugins(DefaultPlugins)
     .add_plugin(InteractionPlugin)
     .add_plugin(DragPlugin)
-    .add_startup_system(setup.system())
-    .add_system(interact_with_trashcan.system())
-    .add_system(drag_trash.system())
+    .add_startup_system(setup)
+    .add_system(interact_with_trashcan)
+    .add_system(drag_trash)
     .run();
 }
 

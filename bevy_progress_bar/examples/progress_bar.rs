@@ -7,8 +7,8 @@ fn main() {
     .add_plugins(DefaultPlugins)
     .add_plugin(NinePatchPlugin::<()>::default())
     .add_plugin(ProgressBarPlugin)
-    .add_startup_system(setup_loading.system())
-    .add_system(update_loading.system())
+    .add_startup_system(setup_loading)
+    .add_system(update_loading)
     .run();
 }
 
