@@ -1,6 +1,6 @@
 [package]
 name = "bevy_progress_bar"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["Ansho Rei <anshorei@protonmail.com>"]
 edition = "2018"
 license-file = "LICENSE"
@@ -20,12 +20,12 @@ exclude = [
 ]
 
 [dependencies]
-bevy = { version = "0.5", default-features = false }
-bevy_ninepatch = "0.5"
+bevy = { version = "0.6", default-features = false }
+bevy_ninepatch = "0.6"
 spirv_headers = ">= 1.5.0, < 1.5.1"
 
 [dev-dependencies]
-bevy = { version = "0.5", default-features = true }
+bevy = { version = "0.6", default-features = true }
 
 [[example]]
 name = "progress_bar"

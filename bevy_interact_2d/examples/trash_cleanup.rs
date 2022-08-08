@@ -1,7 +1,11 @@
 use bevy::prelude::*;
+#[cfg(feature = "debug")]
+use bevy_interact_2d::InteractionDebugPlugin as InteractionPlugin;
+#[cfg(not(feature = "debug"))]
+use bevy_interact_2d::InteractionPlugin;
 use bevy_interact_2d::{
   drag::{DragPlugin, Draggable, Dragged},
-  Group, Interactable, InteractionPlugin, InteractionSource, InteractionState,
+  Group, Interactable, InteractionSource, InteractionState,
 };
 use rand::prelude::*;
 
@@ -9,7 +13,7 @@ const TRASH_GROUP: u8 = 0;
 const TRASHCAN_GROUP: u8 = 1;
 
 fn main() {
-  App::build()
+  App::new()
     .add_plugins(DefaultPlugins)
     .add_plugin(InteractionPlugin)
     .add_plugin(DragPlugin)
@@ -19,7 +23,10 @@ fn main() {
     .run();
 }
 
+#[derive(Component)]
 struct TrashCan {}
+
+#[derive(Component)]
 struct Trash {}
 
 fn setup(
@@ -104,8 +111,7 @@ fn setup(
       },
       GlobalTransform::default(),
     ))
-    .push_children(&entities)
-    .id();
+    .push_children(&entities);
 }
 
 // This system opens and closes the trashcan when the mouse

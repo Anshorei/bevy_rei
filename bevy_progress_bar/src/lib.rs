@@ -7,18 +7,20 @@ use bevy_ninepatch::{NinePatchBuilder, NinePatchBundle, NinePatchData};
 pub struct ProgressBarPlugin;
 
 impl Plugin for ProgressBarPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
       .add_system(create_progress_bars.system())
-      .add_system(update_progress_bars.system());
+      .add_system(update_progress_bars.system())
+    ;
   }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Component)]
 pub struct ProgressBarData {
-  pub nine_patch:         Handle<NinePatchBuilder<()>>,
-  pub foreground_texture: Handle<Texture>,
-  pub background_texture: Handle<Texture>,
+  pub foreground_nine_patch:         Handle<NinePatchBuilder<()>>,
+  pub background_nine_patch:         Handle<NinePatchBuilder<()>>,
+  pub foreground_texture: Handle<Image>,
+  pub background_texture: Handle<Image>,
   pub percent:            f32,
   // No need to touch
   pub percent_mutex:      Arc<Mutex<f32>>,
@@ -27,7 +29,8 @@ pub struct ProgressBarData {
 impl Default for ProgressBarData {
   fn default() -> Self {
     Self {
-      nine_patch:         Default::default(),
+      foreground_nine_patch:         Default::default(),
+      background_nine_patch:         Default::default(),
       foreground_texture: Default::default(),
       background_texture: Default::default(),
       percent:            0.,
@@ -36,6 +39,7 @@ impl Default for ProgressBarData {
   }
 }
 
+#[derive(Component)]
 struct ProgressBarForeground {
   pub percent_mutex: Arc<Mutex<f32>>,
 }
@@ -51,7 +55,7 @@ pub struct ProgressBarBundle {
 
 fn create_ninepatch_bundle(
   nine_patch_handle: Handle<NinePatchBuilder<()>>,
-  texture_handle: Handle<Texture>,
+  texture_handle: Handle<Image>,
   percent: Option<f32>,
 ) -> NinePatchBundle<()> {
   NinePatchBundle {
@@ -76,26 +80,22 @@ fn create_progress_bars(
   mut query: Query<(Entity, &ProgressBarData), Added<ProgressBarData>>,
 ) {
   for (parent, progress_bar_data) in query.iter_mut() {
-    let background = commands
-      .spawn_bundle(create_ninepatch_bundle(
-        progress_bar_data.nine_patch.clone(),
+    commands.entity(parent).with_children(|parent| {
+      parent.spawn_bundle(create_ninepatch_bundle(
+        progress_bar_data.background_nine_patch.clone(),
         progress_bar_data.background_texture.clone(),
         None,
-      ))
-      .id();
-    let foreground = commands
-      .spawn_bundle(create_ninepatch_bundle(
-        progress_bar_data.nine_patch.clone(),
-        progress_bar_data.foreground_texture.clone(),
-        Some(progress_bar_data.percent),
-      ))
-      .insert(ProgressBarForeground {
-        percent_mutex: progress_bar_data.percent_mutex.clone(),
-      })
-      .id();
-    commands
-      .entity(parent)
-      .push_children(&[background, foreground]);
+      ));
+      parent
+        .spawn_bundle(create_ninepatch_bundle(
+          progress_bar_data.foreground_nine_patch.clone(),
+          progress_bar_data.foreground_texture.clone(),
+          Some(progress_bar_data.percent),
+        ))
+        .insert(ProgressBarForeground {
+          percent_mutex: progress_bar_data.percent_mutex.clone(),
+        });
+    });
   }
 }
 

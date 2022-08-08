@@ -7,6 +7,8 @@ use bevy::{
   render::camera::Camera,
   window::WindowId,
 };
+#[cfg(feature = "debug")]
+use bevy_prototype_lyon::plugin::ShapePlugin;
 
 pub mod drag;
 
@@ -15,7 +17,7 @@ pub mod drag;
 pub struct InteractionPlugin;
 
 impl Plugin for InteractionPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
       .init_resource::<InteractionState>()
       .add_system_to_stage(CoreStage::PostUpdate, interaction_state_system.system())
@@ -32,9 +34,10 @@ pub struct InteractionDebugPlugin;
 
 #[cfg(feature = "debug")]
 impl Plugin for InteractionDebugPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
       .add_plugin(InteractionPlugin)
+      .add_plugin(ShapePlugin)
       // TODO: what is the correct stage for this?
       // POST_UPDATE doesn't work because then lyon won't draw the bounding mesh
       // check whether that is done in UPDATE or POST_UPDATE
@@ -67,6 +70,7 @@ impl InteractionState {
 }
 
 /// Attach an interaction source to cameras you want to interact from
+#[derive(Component)]
 pub struct InteractionSource {
   pub groups:        Vec<Group>,
   pub cursor_events: ManualEventReader<CursorMoved>,
@@ -128,6 +132,7 @@ fn interaction_state_system(
 }
 
 /// This component makes an entity interactable with the mouse cursor
+#[derive(Component)]
 pub struct Interactable {
   /// The interaction groups this interactable entity belongs to
   pub groups:       Vec<Group>,
@@ -179,6 +184,7 @@ fn interaction_system(
 }
 
 #[cfg(feature = "debug")]
+#[derive(Component)]
 pub struct DebugInteractable {
   pub child: Entity,
 }
@@ -202,6 +208,7 @@ fn setup_interaction_debug(
       true => 0,
       false => 255,
     };
+
     let bounding_mesh = shapes::Polygon {
       points: vec![
         Vec2::new(interactable.bounding_box.0.x, interactable.bounding_box.0.y),
@@ -215,8 +222,7 @@ fn setup_interaction_debug(
     let child = commands
       .spawn_bundle(GeometryBuilder::build_as(
         &bounding_mesh,
-        ShapeColors::new(Color::rgb_u8(red, green, blue)),
-        DrawMode::Stroke(StrokeOptions::default()),
+        DrawMode::Stroke(StrokeMode::new(Color::rgb_u8(red, green, blue), 1.0)),
         Transform::default(),
       ))
       .id();

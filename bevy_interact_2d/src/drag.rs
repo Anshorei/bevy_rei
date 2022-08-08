@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use super::{Group, Interactable, InteractionState};
 
+#[derive(Component)]
 pub struct Dragged {
   pub group:        Group,
   pub translation:  Vec2,
@@ -21,7 +22,7 @@ impl Dragged {
 
 pub struct DragPlugin;
 impl Plugin for DragPlugin {
-  fn build(&self, app: &mut AppBuilder) {
+  fn build(&self, app: &mut App) {
     app
       .init_resource::<InteractionState>()
       .add_system(mouse_press_start_drag_system.system())
@@ -57,6 +58,7 @@ pub enum DropStrategy {
   Leave,
 }
 
+#[derive(Component)]
 pub struct Draggable {
   // Where the entity is hooked onto the cursor while dragging.
   // If no hook is given, the entity will be pinned to the cursor

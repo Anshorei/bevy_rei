@@ -3,7 +3,7 @@ use bevy_ninepatch::{NinePatchBuilder, NinePatchPlugin};
 use bevy_progress_bar::{ProgressBarBundle, ProgressBarData, ProgressBarPlugin};
 
 fn main() {
-  App::build()
+  App::new()
     .add_plugins(DefaultPlugins)
     .add_plugin(NinePatchPlugin::<()>::default())
     .add_plugin(ProgressBarPlugin)
@@ -20,15 +20,16 @@ fn setup_loading(
   // We need a UI camera so the ninepatches show up
   commands.spawn_bundle(UiCameraBundle::default());
 
-  // The same ninepatch is used for both foreground and background
-  let nine_patch = nine_patches.add(NinePatchBuilder::by_margins(2, 2, 2, 2));
+  let foreground_nine_patch = nine_patches.add(NinePatchBuilder::by_margins(2, 2, 2, 2));
+  let background_nine_patch = nine_patches.add(NinePatchBuilder::by_margins(2, 2, 2, 2));
   let foreground_texture = asset_server.load("loader_fg.png");
   let background_texture = asset_server.load("loader_bg.png");
 
   // Spawn the progress bar entity
   commands.spawn_bundle(ProgressBarBundle {
     progress_bar_data: ProgressBarData {
-      nine_patch,
+      foreground_nine_patch,
+      background_nine_patch,
       foreground_texture,
       background_texture,
       percent: 0.,
