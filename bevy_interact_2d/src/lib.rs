@@ -101,7 +101,7 @@ fn interaction_state_system(
       interaction_state.last_cursor_position = evt.position;
     }
     let projection_matrix = match camera {
-      Some(camera) => camera.projection_matrix,
+      Some(camera) => camera.projection_matrix(),
       None => panic!("Interacting without camera not supported."),
     };
     if let Some(window) = windows.get(interaction_state.last_window_id) {
@@ -109,7 +109,6 @@ fn interaction_state_system(
       let cursor_position = interaction_state.last_cursor_position;
       let cursor_position_ndc = (cursor_position / screen_size) * 2.0 - Vec2::from([1.0, 1.0]);
       let camera_matrix = global_transform.compute_matrix();
-      //let (_, _, camera_position) = camera_matrix.to_scale_rotation_translation();
       let ndc_to_world: Mat4 = camera_matrix * projection_matrix.inverse();
       let cursor_position = ndc_to_world
         .transform_point3(cursor_position_ndc.extend(1.0))
@@ -163,8 +162,8 @@ fn interaction_system(
         continue;
       }
       // TODO: use bounding_mesh
-      let relative_cursor_position = (cursor_position - global_transform.translation.truncate())
-        / global_transform.scale.truncate();
+      let relative_cursor_position = (cursor_position - global_transform.translation().truncate())
+        / Transform::from(*global_transform).scale.truncate();
       if (interactable.bounding_box.0.x..interactable.bounding_box.1.x)
         .contains(&relative_cursor_position.x)
         && (interactable.bounding_box.0.y..interactable.bounding_box.1.y)

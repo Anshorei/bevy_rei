@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::render::texture::ImageSettings;
 #[cfg(feature = "debug")]
 use bevy_interact_2d::InteractionDebugPlugin as InteractionPlugin;
 #[cfg(not(feature = "debug"))]
@@ -14,6 +15,7 @@ const TRASHCAN_GROUP: u8 = 1;
 
 fn main() {
   App::new()
+    .insert_resource(ImageSettings::default_nearest())
     .add_plugins(DefaultPlugins)
     .add_plugin(InteractionPlugin)
     .add_plugin(DragPlugin)
@@ -37,7 +39,7 @@ fn setup(
   info!("Setting up...");
 
   commands
-    .spawn_bundle(OrthographicCameraBundle::new_2d())
+    .spawn_bundle(Camera2dBundle::default())
     .insert(InteractionSource {
       groups: vec![Group(TRASHCAN_GROUP), Group(TRASH_GROUP)],
       ..Default::default()
@@ -104,13 +106,10 @@ fn setup(
 
   commands
     .spawn()
-    .insert_bundle((
-      Transform {
-        scale: Vec3::new(3., 3., 3.),
-        ..Default::default()
-      },
-      GlobalTransform::default(),
-    ))
+    .insert_bundle(SpatialBundle::from_transform(Transform {
+      scale: Vec3::new(3., 3., 1.),
+      ..Default::default()
+    }))
     .push_children(&entities);
 }
 
