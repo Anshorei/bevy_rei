@@ -93,11 +93,11 @@ pub fn mouse_press_start_drag_system(
         if let Some((_, position)) = list.iter().find(|(e, _)| e == &entity) {
           let translation = draggable
             .hook
-            .unwrap_or(global_transform.translation.truncate() - *position);
+            .unwrap_or(global_transform.translation().truncate() - *position);
           commands.entity(entity).insert(Dragged {
             group: group.clone(),
             translation,
-            origin: global_transform.translation.truncate(),
+            origin: global_transform.translation().truncate(),
             just_dropped: false,
             just_dragged: true,
           });
