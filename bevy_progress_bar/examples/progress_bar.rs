@@ -17,8 +17,8 @@ fn setup_loading(
   asset_server: Res<AssetServer>,
   mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
 ) {
-  // We need a UI camera so the ninepatches show up
-  commands.spawn_bundle(UiCameraBundle::default());
+  // We need a camera so the ninepatches show up
+  commands.spawn(Camera2dBundle::default());
 
   let foreground_nine_patch = nine_patches.add(NinePatchBuilder::by_margins(2, 2, 2, 2));
   let background_nine_patch = nine_patches.add(NinePatchBuilder::by_margins(2, 2, 2, 2));
@@ -26,7 +26,7 @@ fn setup_loading(
   let background_texture = asset_server.load("loader_bg.png");
 
   // Spawn the progress bar entity
-  commands.spawn_bundle(ProgressBarBundle {
+  commands.spawn(ProgressBarBundle {
     progress_bar_data: ProgressBarData {
       foreground_nine_patch,
       background_nine_patch,
@@ -36,7 +36,7 @@ fn setup_loading(
       ..Default::default()
     },
     style: Style {
-      margin: Rect::all(Val::Auto),
+      margin: UiRect::all(Val::Auto),
       align_self: AlignSelf::Center,
       size: Size::new(Val::Percent(80.), Val::Percent(8.)),
       ..Default::default()
@@ -48,7 +48,7 @@ fn setup_loading(
 fn update_loading(time: Res<Time>, mut query: Query<&mut ProgressBarData>) {
   // For this example we'll just have this progress bar
   // fill over a span of 10 seconds again and again.
-  let progress = (time.seconds_since_startup() as f32 * 10.) % 100.;
+  let progress = (time.elapsed_seconds() as f32 * 10.) % 100.;
 
   for mut progress_bar in query.iter_mut() {
     // Just update the percent field and the plugin will

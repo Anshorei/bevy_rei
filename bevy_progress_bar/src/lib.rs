@@ -45,11 +45,13 @@ struct ProgressBarForeground {
 
 #[derive(Bundle, Default)]
 pub struct ProgressBarBundle {
-  pub progress_bar_data: ProgressBarData,
-  pub style:             Style,
-  pub node:              Node,
-  pub transform:         Transform,
-  pub global_transform:  GlobalTransform,
+  pub progress_bar_data:   ProgressBarData,
+  pub style:               Style,
+  pub node:                Node,
+  pub transform:           Transform,
+  pub global_transform:    GlobalTransform,
+  pub visibility:          Visibility,
+  pub computed_visibility: ComputedVisibility,
 }
 
 fn create_ninepatch_bundle(
@@ -59,7 +61,7 @@ fn create_ninepatch_bundle(
 ) -> NinePatchBundle<()> {
   NinePatchBundle {
     style: Style {
-      margin: Rect::all(Val::Px(0.)),
+      margin: UiRect::all(Val::Px(0.)),
       position_type: PositionType::Absolute,
       size: Size::new(Val::Percent(percent.unwrap_or(100.)), Val::Percent(100.)),
       ..Default::default()
@@ -80,13 +82,13 @@ fn create_progress_bars(
 ) {
   for (parent, progress_bar_data) in query.iter_mut() {
     commands.entity(parent).with_children(|parent| {
-      parent.spawn_bundle(create_ninepatch_bundle(
+      parent.spawn(create_ninepatch_bundle(
         progress_bar_data.background_nine_patch.clone(),
         progress_bar_data.background_texture.clone(),
         None,
       ));
       parent
-        .spawn_bundle(create_ninepatch_bundle(
+        .spawn(create_ninepatch_bundle(
           progress_bar_data.foreground_nine_patch.clone(),
           progress_bar_data.foreground_texture.clone(),
           Some(progress_bar_data.percent),

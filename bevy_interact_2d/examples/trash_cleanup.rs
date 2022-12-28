@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::render::texture::ImageSettings;
+use bevy::render::texture::ImagePlugin;
 #[cfg(feature = "debug")]
 use bevy_interact_2d::InteractionDebugPlugin as InteractionPlugin;
 #[cfg(not(feature = "debug"))]
@@ -15,8 +15,7 @@ const TRASHCAN_GROUP: u8 = 1;
 
 fn main() {
   App::new()
-    .insert_resource(ImageSettings::default_nearest())
-    .add_plugins(DefaultPlugins)
+    .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
     .add_plugin(InteractionPlugin)
     .add_plugin(DragPlugin)
     .add_startup_system(setup)
@@ -39,7 +38,7 @@ fn setup(
   info!("Setting up...");
 
   commands
-    .spawn_bundle(Camera2dBundle::default())
+    .spawn(Camera2dBundle::default())
     .insert(InteractionSource {
       groups: vec![Group(TRASHCAN_GROUP), Group(TRASH_GROUP)],
       ..Default::default()
@@ -51,6 +50,8 @@ fn setup(
     Vec2::new(24., 24.),
     2,
     1,
+    None,
+    None,
   ));
 
   let trash_texture = asset_server.load("trash.png");
@@ -59,10 +60,12 @@ fn setup(
     Vec2::new(24., 24.),
     3,
     1,
+    None,
+    None,
   ));
 
   let trashcan = commands
-    .spawn_bundle(SpriteSheetBundle {
+    .spawn(SpriteSheetBundle {
       texture_atlas: trashcan_atlas,
       transform: Transform::from_xyz(0., 0., 0.),
       ..Default::default()
@@ -79,7 +82,7 @@ fn setup(
 
   for i in 0..3 {
     let trash = commands
-      .spawn_bundle(SpriteSheetBundle {
+      .spawn(SpriteSheetBundle {
         texture_atlas: trash_atlas.clone(),
         transform: Transform::from_xyz(
           random::<f32>() * 100. - 50.,
@@ -105,8 +108,7 @@ fn setup(
   }
 
   commands
-    .spawn()
-    .insert_bundle(SpatialBundle::from_transform(Transform {
+    .spawn(SpatialBundle::from_transform(Transform {
       scale: Vec3::new(3., 3., 1.),
       ..Default::default()
     }))

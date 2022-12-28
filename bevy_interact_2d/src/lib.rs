@@ -52,7 +52,7 @@ impl Plugin for InteractionDebugPlugin {
 #[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Default)]
 pub struct Group(pub u8);
 
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub struct InteractionState {
   pub ordered_interact_list_map: HashMap<Group, Vec<(Entity, Vec2)>>,
   pub cursor_positions:          HashMap<Group, Vec2>,
