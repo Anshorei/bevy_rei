@@ -20,12 +20,12 @@ exclude = [
 ]
 
 [dependencies]
-bevy = { version = "0.9", default-features = false }
-bevy_ninepatch = "0.9"
+bevy = { version = "0.10", default-features = false }
+bevy_ninepatch = "0.10"
 spirv_headers = ">= 1.5.0, < 1.5.1"
 
 [dev-dependencies]
-bevy = { version = "0.9", default-features = true, features = ["render"] }
+bevy = { version = "0.10", default-features = true, features = ["bevy_render"] }
 
 [[example]]
 name = "progress_bar"

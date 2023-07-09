@@ -23,11 +23,11 @@ exclude = [
 debug = ["bevy_prototype_lyon"]
 
 [dependencies]
-bevy = { version = "0.9", default-features = false, features = [ "render" ] }
-bevy_prototype_lyon = { version = "0.6", optional = true }
+bevy = { version = "0.10", default-features = false, features = [ "bevy_render" ] }
+bevy_prototype_lyon = { version = "0.8", optional = true }
 
 [dev-dependencies]
-bevy = { version = "0.9", default-features = true }
+bevy = { version = "0.10", default-features = true }
 rand = "0.8"
 
 [[example]]
