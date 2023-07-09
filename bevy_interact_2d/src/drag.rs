@@ -95,7 +95,7 @@ pub fn mouse_press_start_drag_system(
             .hook
             .unwrap_or(global_transform.translation().truncate() - *position);
           commands.entity(entity).insert(Dragged {
-            group: group.clone(),
+            group: *group,
             translation,
             origin: global_transform.translation().truncate(),
             just_dropped: false,

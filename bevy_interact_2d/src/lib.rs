@@ -5,7 +5,6 @@ use bevy::prelude::*;
 use bevy::{
   ecs::event::{Events, ManualEventReader},
   render::camera::Camera,
-  window::WindowId,
 };
 #[cfg(feature = "debug")]
 use bevy_prototype_lyon::plugin::ShapePlugin;
@@ -20,8 +19,8 @@ impl Plugin for InteractionPlugin {
   fn build(&self, app: &mut App) {
     app
       .init_resource::<InteractionState>()
-      .add_system_to_stage(CoreStage::PostUpdate, interaction_state_system)
-      .add_system_to_stage(CoreStage::PostUpdate, interaction_system);
+      .add_system(interaction_state_system.in_base_set(CoreSet::PostUpdate))
+      .add_system(interaction_system.in_base_set(CoreSet::PostUpdate));
   }
 }
 
@@ -55,9 +54,9 @@ pub struct Group(pub u8);
 #[derive(Default, Resource)]
 pub struct InteractionState {
   pub ordered_interact_list_map: HashMap<Group, Vec<(Entity, Vec2)>>,
-  pub cursor_positions:          HashMap<Group, Vec2>,
-  pub last_window_id:            WindowId,
-  pub last_cursor_position:      Vec2,
+  pub cursor_positions: HashMap<Group, Vec2>,
+  pub last_window_id: Option<Entity>,
+  pub last_cursor_position: Vec2,
 }
 
 impl InteractionState {
@@ -72,14 +71,14 @@ impl InteractionState {
 /// Attach an interaction source to cameras you want to interact from
 #[derive(Component)]
 pub struct InteractionSource {
-  pub groups:        Vec<Group>,
+  pub groups: Vec<Group>,
   pub cursor_events: ManualEventReader<CursorMoved>,
 }
 
 impl Default for InteractionSource {
   fn default() -> Self {
     Self {
-      groups:        vec![Group::default()],
+      groups: vec![Group::default()],
       cursor_events: ManualEventReader::default(),
     }
   }
@@ -90,40 +89,42 @@ impl Default for InteractionSource {
 fn interaction_state_system(
   mut interaction_state: ResMut<InteractionState>,
   cursor_moved: Res<Events<CursorMoved>>,
-  windows: Res<Windows>,
+  windows: Query<&Window>,
   mut sources: Query<(&mut InteractionSource, &GlobalTransform, Option<&Camera>)>,
 ) {
   interaction_state.cursor_positions.clear();
 
   for (mut interact_source, global_transform, camera) in sources.iter_mut() {
     if let Some(evt) = interact_source.cursor_events.iter(&cursor_moved).last() {
-      interaction_state.last_window_id = evt.id;
+      interaction_state.last_window_id = Some(evt.window);
       interaction_state.last_cursor_position = evt.position;
     }
     let projection_matrix = match camera {
       Some(camera) => camera.projection_matrix(),
       None => panic!("Interacting without camera not supported."),
     };
-    if let Some(window) = windows.get(interaction_state.last_window_id) {
-      let screen_size = Vec2::from([window.width() as f32, window.height() as f32]);
-      let cursor_position = interaction_state.last_cursor_position;
-      let cursor_position_ndc = (cursor_position / screen_size) * 2.0 - Vec2::from([1.0, 1.0]);
-      let camera_matrix = global_transform.compute_matrix();
-      let ndc_to_world: Mat4 = camera_matrix * projection_matrix.inverse();
-      let cursor_position = ndc_to_world
-        .transform_point3(cursor_position_ndc.extend(1.0))
-        .truncate();
+    if let Some(last_window_id) = interaction_state.last_window_id {
+      if let Ok(window) = windows.get(last_window_id) {
+        let screen_size = Vec2::from([window.width(), window.height()]);
+        let cursor_position = interaction_state.last_cursor_position;
+        let cursor_position_ndc = (cursor_position / screen_size) * 2.0 - Vec2::from([1.0, 1.0]);
+        let camera_matrix = global_transform.compute_matrix();
+        let ndc_to_world: Mat4 = camera_matrix * projection_matrix.inverse();
+        let cursor_position = ndc_to_world
+          .transform_point3(cursor_position_ndc.extend(1.0))
+          .truncate();
 
-      for group in &interact_source.groups {
-        if interaction_state
-          .cursor_positions
-          .insert(*group, cursor_position)
-          .is_some()
-        {
-          panic!(
-            "Multiple interaction sources have been added to interaction group {:?}",
-            group
-          );
+        for group in &interact_source.groups {
+          if interaction_state
+            .cursor_positions
+            .insert(*group, cursor_position)
+            .is_some()
+          {
+            panic!(
+              "Multiple interaction sources have been added to interaction group {:?}",
+              group
+            );
+          }
         }
       }
     }
@@ -134,7 +135,7 @@ fn interaction_state_system(
 #[derive(Component)]
 pub struct Interactable {
   /// The interaction groups this interactable entity belongs to
-  pub groups:       Vec<Group>,
+  pub groups: Vec<Group>,
   /// The interaction area for the interactable entity
   pub bounding_box: (Vec2, Vec2),
 }
@@ -142,7 +143,7 @@ pub struct Interactable {
 impl Default for Interactable {
   fn default() -> Self {
     Self {
-      groups:       vec![Group::default()],
+      groups: vec![Group::default()],
       bounding_box: (Vec2::default(), Vec2::default()),
     }
   }
